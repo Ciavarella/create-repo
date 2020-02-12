@@ -1,4 +1,7 @@
 const renameKey = (obj, oldKey, newKey) => {
+
+
+
   Object.defineProperty(obj, newKey,
     Object.getOwnPropertyDescriptor(obj, oldKey))
   delete obj[oldKey]

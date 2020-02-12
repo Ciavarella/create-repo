@@ -1,22 +1,34 @@
 const utils = require('./utils/utils')
 const fetch = require('node-fetch')
+const inquirer = require('inquirer')
 
 const args = process.argv.slice(2)
 const params = Object.assign({}, args)
 utils.renameKey(params, 0, 'token')
-utils.renameKey(params, 1, 'user')
-utils.renameKey(params, 2, 'name')
-
-
 const url = 'https://api.github.com/user/repos'
 
-const body = {
-  name: params.name,
-  auto_init: true,
-  homepage: `https://github.com/${params.user}`
-}
+inquirer
+  .prompt([
+    { name: 'user',
+      message: 'Please enter your username'
+    } ,
+    {
+      name: 'name',
+      message: 'enter repo name'
+    }
+  ])
+  .then(answers => {
+    
+    const body = {
+      name: answers.name,
+      homepage: `https://github.com/${answers.user}`,
+      auto_init: true
+    }
 
-const createRepo = async url => {
+    createRepo(url, body)
+  });
+
+const createRepo = async (url, body) => {
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -30,8 +42,7 @@ const createRepo = async url => {
     console.log('Copy following line:')
     console.log(`git remote add origin ${res.ssh_url}`)
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 }
 
-createRepo(url)
